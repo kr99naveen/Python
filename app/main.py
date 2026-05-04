@@ -1,50 +1,64 @@
 from fastapi import FastAPI, HTTPException, status
 from typing import Any
-
-from .schemas import BaseShipment
+from .schemas import BaseShipment,ReadShipment, UpdateShipment
+from .database import Database
 
 app = FastAPI()
 
+db = Database()
+
 
 @app.get("/shipment")
-def get_shipment():
-    return {"content": "wooden table", "status": "in transit"}
-
+def get_shipment(id:int)->ReadShipment:
+    shipment = db.get(id)
+    if shipment is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Given id does not exist"
+        )
+    return shipment
 
 @app.get("/shipment/{id}")
-def get_shipment_by_id(id: int) -> dict[str, str]:
-    return {"id": str(id), "content": "wooden table", "status": "in transit"}
-
-
-@app.get("/shipment-by-query", status_code=status.HTTP_200_OK)
-def get_shipment_by_query(
-    qp1: int | None = None, qp2: int | None = None
-) -> dict[str, str]:
-    if qp1 is not None and qp2 is None:
+def get_shipment_by_id(id: int) -> ReadShipment:
+    shipment = db.get(id)
+    if shipment is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"error": True, "message": "Both fields are required or None"},
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Given id does not exist"
         )
-    print("variables ::: ", qp1, " : ", qp2)
-    return {"content": "wooden table", "status": "in transit"}
+    return shipment
+
+@app.get("/all-shipments")
+def get_all_shipments() -> list[ReadShipment]:
+    shipments = db.getAll()
+    print("shipments :::::::: ",shipments)
+    if shipments is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No shipments found"
+        )
+    return shipments
 
 
 @app.post("/shipment", status_code=status.HTTP_201_CREATED)
-def create_shipment(data: BaseShipment) -> dict[str, Any]:
-    print("body received ::: ", data)
-    if "key1" not in data:
+def create_shipment(data: BaseShipment) -> int:
+    return db.create(data)
+    
+
+@app.patch("/shipment")
+def update_shipment(id:int, data: UpdateShipment)->ReadShipment|None:
+    res = db.update(id, data)
+    if res is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"message": "Required field missing"},
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail= {
+                "msg": "Shipment with given id not found",
+                "error": True
+            }
         )
-    return {
-        "error": False,
-        "message": "shipment created",
-        "data": data,
-    }
+    return res
 
 
-@app.post("/shipment/create")
-def create_shipment_fun(shipment: BaseShipment) -> dict[str, Any]:
-    print("body received ::: ", shipment)
-    return {"error": False, "msg": "Shipment data added", "data": shipment}
+@app.delete("/shipment")
+def update_shipment(id:int)->int|None:
+    return db.delete(id)
