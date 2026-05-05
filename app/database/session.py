@@ -4,10 +4,11 @@ from .models import Shipment
 
 engine=create_engine(
     url="sqlite:///sqlite.db",
-    echo=True,
+    echo=True, #this basically prints the sql statements executed
     connect_args={
         "check_same_thread" : False
     }
 )
 
-SQLModel.metadata.create_all(bind=engine)
+def create_db_tables():
+    SQLModel.metadata.create_all(bind=engine)

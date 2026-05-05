@@ -1,12 +1,23 @@
 from fastapi import FastAPI, HTTPException, status
+from contextlib import asynccontextmanager
+
 from typing import Any
 from .schemas import BaseShipment,ReadShipment, UpdateShipment
-from .database import Database
+from .db import Database
+from app.database.session import create_db_tables
+from rich import print, panel
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan_handler(app:FastAPI):
+    print(panel.Panel("Server started...",border_style="green"))
+    create_db_tables()
+    yield
+    print(panel.Panel("Server stopped...",border_style="red"))
+
+app = FastAPI(lifespan=lifespan_handler)
 
 db = Database()
-
 
 @app.get("/shipment")
 def get_shipment(id:int)->ReadShipment:

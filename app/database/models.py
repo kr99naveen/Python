@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from enum import Enum
 
 from sqlmodel import SQLModel, Field
@@ -10,7 +10,7 @@ class ShipmentStatusEnum(str,Enum):
     delivered="delivered"
 
 class Shipment(SQLModel, table=True):
-    __tablename__="shipments"
+    __tablename__="shipments2"
 
     id : int = Field(primary_key=True)
     content: str
