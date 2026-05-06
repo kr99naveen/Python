@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Column
 
 class ShipmentStatusEnum(str,Enum):
     placed="placed"
@@ -16,5 +16,5 @@ class Shipment(SQLModel, table=True):
     content: str
     weight: float = Field(le=25)
     destination: int
-    status: ShipmentStatusEnum
-    estimated_delivery: datetime 
+    status: ShipmentStatusEnum = Field(default=ShipmentStatusEnum.placed)
+    estimated_delivery: datetime | None

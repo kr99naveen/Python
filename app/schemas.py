@@ -1,10 +1,13 @@
-from pydantic import BaseModel, Field
-from random import randint
+from datetime import datetime
 from enum import Enum
+from random import randint
+
+from pydantic import BaseModel, Field
 
 from app.database.models import ShipmentStatusEnum
 
-#APIs schema for validating Req/Res data
+
+# APIs schema for validating Req/Res data
 # pydantic provide the data validation along with type hints, this
 # class will act like a DTO file like in js
 class BaseShipment(BaseModel):
@@ -16,7 +19,9 @@ class BaseShipment(BaseModel):
 class ReadShipment(BaseShipment):
     id: int
     status: ShipmentStatusEnum = Field(default=ShipmentStatusEnum.placed)
+    estimated_delivery: datetime
 
 
-class UpdateShipment(BaseShipment):
-    status: ShipmentStatusEnum = Field(default=ShipmentStatusEnum.placed)
+class UpdateShipment(BaseModel):
+    status: ShipmentStatusEnum | None = Field(default=None)
+    estimated_delivery: datetime | None = Field(default=None)
