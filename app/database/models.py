@@ -10,7 +10,7 @@ class ShipmentStatusEnum(str,Enum):
     delivered="delivered"
 
 class Shipment(SQLModel, table=True):
-    __tablename__="shipments2"
+    __tablename__="shipments"
 
     id : int = Field(primary_key=True)
     content: str

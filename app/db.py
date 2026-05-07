@@ -1,5 +1,5 @@
 import sqlite3
-from .schemas import BaseShipment, ReadShipment, UpdateShipment
+from app.api.schemas.shipment import BaseShipment, ReadShipment, UpdateShipment
 
 class Database:
     def __init__(self):
